@@ -1,6 +1,7 @@
 var express = require('express');
 var request = require('request');
 var bodyParser = require('body-parser');
+var Repo = require('../database/index.js');
 
 var app = express();
 
@@ -22,7 +23,15 @@ app.post('/repos/import', function (req, res) {
     gitHubInfo.forEach(function(item) {
       results.push({'name': item.name, 'owner-id': item.owner.id, 'url': item.html_url, 'description': item.description, 'private': item.private});
     });
-    console.log(results);
+    for (var i = 0; i < results.length; i++) {
+      Repo.create(results[i])
+      .then(item => {
+        //res.send('github information has been successfully saved to the database');
+      })
+      .catch(err => {
+        //res.status(400).send('github information has not been successfully saved to the database')
+      })
+    }
   });
 });
 
